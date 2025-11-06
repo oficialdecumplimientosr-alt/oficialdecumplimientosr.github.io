@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Matrices Progresivas - Farmacias San Roque</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --darker: #1a2530;
+            --shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, var(--primary), var(--darker));
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 35px;
+            margin-bottom: 30px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #eaeaea;
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+            transform: translateY(-5px);
+        }
+        
+        .instructions {
+            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+            border-left: 6px solid var(--secondary);
+        }
+        
+        .matrix-container {
+            text-align: center;
+            margin: 35px 0;
+            padding: 30px;
+            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #dee2e6;
+        }
+        
+        .matrix-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(to right, var(--primary), var(--secondary), var(--accent));
+        }
+        
+        .matrix {
+            display: inline-block;
+            border: 3px solid var(--dark);
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .matrix-row {
+            display: flex;
+        }
+        
+        .matrix-cell {
+            width: 100px;
+            height: 100px;
+            border: 2px solid #bdc3c7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            background-color: white;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .matrix-cell:not(.empty):hover {
+            background-color: #f8f9fa;
+            transform: scale(1.08);
+            z-index: 1;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .matrix-cell.empty {
+            background: repeating-linear-gradient(
+                45deg,
+                #f8f9fa,
+                #f8f9fa 10px,
+                #e9ecef 10px,
+                #e9ecef 20px
+            );
+            border: 3px dashed #95a5a6;
+            font-weight: bold;
+            color: var(--accent);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin: 35px 0;
+        }
+        
+        .option {
+            padding: 30px;
+            border: 3px solid #ddd;
+            border-radius: 15px;
+            cursor: pointer;
+            text-align: center;
+            background: white;
+            font-size: 2rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 120px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: var(--transition);
+        }
+        
+        .option:hover {
+            border-color: var(--secondary);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .option:hover::before {
+            left: 100%;
+        }
+        
+        .option.selected {
+            border-color: var(--primary);
+            background: linear-gradient(to bottom, #e3f2fd, #bbdefb);
+            transform: scale(1.08);
+            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn {
+            padding: 16px 32px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-block;
+            margin: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: var(--transition);
+        }
+        
+        .btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:hover::after {
+            left: 100%;
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-accent {
+            background: linear-gradient(to right, var(--accent), #c0392b);
+        }
+        
+        .btn-success {
+            background: linear-gradient(to right, var(--success), #27ae60);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(to right, var(--warning), #e67e22);
+        }
+        
+        .progress-container {
+            margin: 35px 0;
+        }
+        
+        .progress-bar {
+            height: 14px;
+            background-color: #e0e0e0;
+            border-radius: 7px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--secondary), var(--accent));
+            width: 0%;
+            transition: width 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-image: linear-gradient(
+                -45deg,
+                rgba(255, 255, 255, 0.3) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.3) 50%,
+                rgba(255, 255, 255, 0.3) 75%,
+                transparent 75%,
+                transparent
+            );
+            z-index: 1;
+            background-size: 25px 25px;
+            animation: move 1.2s linear infinite;
+        }
+        
+        @keyframes move {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 25px 0;
+            }
+        }
+        
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .results {
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+            border-radius: 20px;
+        }
+        
+        .score-display {
+            font-size: 5rem;
+            font-weight: bold;
+            background: linear-gradient(to right, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 25px 0;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .interpretation {
+            font-size: 1.4rem;
+            margin: 30px 0;
+            padding: 25px;
+            border-radius: 12px;
+            background-color: white;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            border-left: 6px solid var(--success);
+            text-align: left;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .footer-note {
+            text-align: center;
+            margin-top: 40px;
+            padding: 25px;
+            font-size: 1rem;
+            color: #7f8c8d;
+            border-top: 1px solid #eee;
+            background-color: #f8f9fa;
+        }
+        
+        .time-container {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            display: inline-block;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .pattern-info {
+            margin-top: 25px;
+            padding: 20px;
+            background: linear-gradient(to right, #e8f4f8, #d1ecf1);
+            border-radius: 10px;
+            border-left: 5px solid var(--secondary);
+            font-size: 1.1rem;
+        }
+        
+        .complexity-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .complexity-low {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .complexity-medium {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .complexity-high {
+            background-color: var(--accent);
+            color: white;
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            min-width: 150px;
+            margin: 10px;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: #7f8c8d;
+        }
+        
+        .detailed-results {
+            max-width: 800px;
+            margin: 30px auto;
+            text-align: left;
+        }
+        
+        .result-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .correct-answer {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .incorrect-answer {
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-input:focus {
+            border-color: var(--secondary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        @media (max-width: 992px) {
+            .options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .matrix-cell {
+                width: 80px;
+                height: 80px;
+                font-size: 1.8rem;
+            }
+            
+            h1 {
+                font-size: 2.3rem;
+            }
+            
+            .score-display {
+                font-size: 4rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .options {
+                grid-template-columns: 1fr;
+            }
+            
+            .matrix-cell {
+                width: 70px;
+                height: 70px;
+                font-size: 1.6rem;
+            }
+            
+            .content {
+                padding: 25px;
+            }
+            
+            .card {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .score-display {
+                font-size: 3.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .matrix-cell {
+                width: 60px;
+                height: 60px;
+                font-size: 1.4rem;
+            }
+            
+            .option {
+                padding: 20px;
+                min-height: 100px;
+                font-size: 1.7rem;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .score-display {
+                font-size: 3rem;
+            }
+        }
+    </style>
+    <!-- Incluir la biblioteca jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Test de Matrices Progresivas</h1>
+            <p class="subtitle">Evaluación de Razonamiento Abstracto - Farmacias San Roque</p>
+        </header>
+        
+        <div class="content">
+            <!-- Sección de datos personales -->
+            <div id="personal-data" class="card instructions">
+                <h2>Datos Personales</h2>
+                <p>Por favor, ingresa tus datos antes de comenzar el test:</p>
+                
+                <div class="form-group">
+                    <label class="form-label" for="participant-name">Nombre completo:</label>
+                    <input type="text" id="participant-name" class="form-input" placeholder="Ingresa tu nombre completo">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="participant-age">Edad:</label>
+                    <input type="number" id="participant-age" class="form-input" placeholder="Ingresa tu edad" min="10" max="100">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="participant-email">Correo electrónico (opcional):</label>
+                    <input type="email" id="participant-email" class="form-input" placeholder="Ingresa tu correo electrónico">
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-accent" onclick="savePersonalData()">Continuar al Test</button>
+                </div>
+            </div>
+            
+            <div id="instructions" class="card instructions hidden">
+                <h2>Instrucciones del Test</h2>
+                <p>Esta evaluación mide tu capacidad para identificar patrones complejos, relaciones lógicas abstractas y transformaciones multidimensionales.</p>
+                <p><strong>Características del test:</strong></p>
+                <ul>
+                    <li><strong>15 preguntas progresivas</strong> con patrones de complejidad creciente</li>
+                    <li><strong>Sistema de temporización</strong> con métricas de velocidad y precisión</li>
+                    <li><strong>Análisis detallado</strong> de cada respuesta con explicaciones completas</li>
+                    <li><strong>Estadísticas avanzadas</strong> sobre tu rendimiento</li>
+                    <li><strong>Múltiples dimensiones</strong> de evaluación: lógica, espacial, numérica</li>
+                </ul>
+                <p><strong>Tu tarea:</strong> Analiza cada matriz y selecciona la opción que completa correctamente el patrón lógico.</p>
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-accent" onclick="startTest()">Iniciar Test</button>
+                </div>
+            </div>
+            
+            <div id="test" class="hidden">
+                <div class="progress-container">
+                    <div class="progress-text">
+                        <span>Pregunta <span id="current">1</span> de <span id="total">15</span></span>
+                        <span><span id="score-value">0</span> correctas</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress" id="progress-bar"></div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center;">
+                    <div class="time-container">
+                        Tiempo: <span id="timer">00:00</span>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Analiza el patrón y selecciona la opción correcta:</h3>
+                    <div class="matrix-container">
+                        <div class="matrix" id="matrix">
+                            <!-- La matriz se generará dinámicamente -->
+                        </div>
+                    </div>
+                    
+                    <div class="pattern-info" id="pattern-info">
+                        <!-- La información del patrón se mostrará aquí -->
+                    </div>
+                    
+                    <div class="options" id="options">
+                        <!-- Las opciones se generarán dinámicamente -->
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button class="btn" id="next-button" onclick="checkAnswer()">Siguiente Pregunta</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="results" class="hidden results">
+                <h2>Resultados del Test</h2>
+                <div class="score-display" id="final-score">0/15</div>
+                
+                <div class="stats-container">
+                    <div class="stat-box">
+                        <div class="stat-value" id="correct-answers">0</div>
+                        <div class="stat-label">Respuestas Correctas</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="percentage">0%</div>
+                        <div class="stat-label">Porcentaje de Acierto</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="total-time">00:00</div>
+                        <div class="stat-label">Tiempo Total</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="average-time">0s</div>
+                        <div class="stat-label">Tiempo Promedio</div>
+                    </div>
+                </div>
+                
+                <div class="interpretation" id="interpretation">
+                    <!-- La interpretación se generará dinámicamente -->
+                </div>
+                
+                <div class="detailed-results card" id="detailed-results">
+                    <h3>Desglose de Resultados</h3>
+                    <!-- Los resultados detallados se generarán dinámicamente -->
+                </div>
+                
+                <div style="margin-top: 40px;">
+                    <button class="btn btn-success" onclick="resetTest()">Repetir Test</button>
+                    <button class="btn btn-warning" onclick="showAnswers()">Ver Explicaciones</button>
+                    <button class="btn btn-accent" onclick="generatePDF()">Generar PDF de Resultados</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-note">
+            <p><strong>Derechos reservados Farmacias San Roque 2025</strong></p>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedOption = null;
+        let testData = [];
+        let startTime;
+        let timerInterval;
+        let timeElapsed = 0;
+        let questionStartTime;
+        let timesPerQuestion = [];
+        let userAnswers = [];
+        let participantData = {};
+
+        // Datos del test definitivo (patrones complejos y variados)
+        function initializeTestData() {
+            testData = [
+                {
+                    // Patrón: Rotación de formas y colores
+                    matrix: [
+                        ['🔺', '🔵', '🟦'],
+                        ['🔵', '🟦', '🔺'],
+                        ['🟦', '🔺', null]
+                    ],
+                    options: ['🔵', '🟦', '🔺'],
+                    correct: 0,
+                    explanation: "Rotación de formas y colores en sentido horario",
+                    complexity: "Media",
+                    detailedExplanation: "El patrón sigue una rotación horaria donde cada forma/color se mueve a la siguiente posición en cada fila."
+                },
+                {
+                    // Patrón: Secuencia Fibonacci visual
+                    matrix: [
+                        ['●', '●', '●●'],
+                        ['●', '●●', '●●●'],
+                        ['●●', '●●●', null]
+                    ],
+                    options: ['●●●●●', '●●●●', '●●●'],
+                    correct: 0,
+                    explanation: "Secuencia de Fibonacci representada visualmente",
+                    complexity: "Media",
+                    detailedExplanation: "Cada celda contiene la suma de puntos de las dos celdas anteriores en la secuencia, similar a la sucesión de Fibonacci."
+                },
+                {
+                    // Patrón: Transformación progresiva
+                    matrix: [
+                        ['□', '◐', '○'],
+                        ['◐', '○', '◑'],
+                        ['○', '◑', null]
+                    ],
+                    options: ['□', '◐', '◑'],
+                    correct: 2,
+                    explanation: "Transformación progresiva de formas",
+                    complexity: "Media",
+                    detailedExplanation: "El patrón muestra una transformación gradual de cuadrado a círculo pasando por estados intermedios."
+                },
+                {
+                    // Patrón: Operaciones matemáticas anidadas
+                    matrix: [
+                        ['2', '4', '8'],
+                        ['3', '9', '27'],
+                        ['4', '16', null]
+                    ],
+                    options: ['64', '32', '16'],
+                    correct: 0,
+                    explanation: "Patrón de potencias sucesivas",
+                    complexity: "Alta",
+                    detailedExplanation: "Cada fila sigue el patrón: n, n², n³. Por lo tanto, para la tercera fila: 4, 16 (4²), 64 (4³)."
+                },
+                {
+                    // Patrón: Simetría de espejo compleja
+                    matrix: [
+                        ['◢', '◣', '◤'],
+                        ['◣', '◤', '◥'],
+                        ['◤', '◥', null]
+                    ],
+                    options: ['◢', '◣', '◥'],
+                    correct: 0,
+                    explanation: "Simetría de espejo en diagonal",
+                    complexity: "Alta",
+                    detailedExplanation: "El patrón es simétrico respecto a la diagonal principal, creando un efecto de espejo."
+                },
+                {
+                    // Patrón: Combinación de atributos múltiples
+                    matrix: [
+                        ['🔺R', '🔵B', '🟦G'],
+                        ['🔵R', '🟦B', '🔺G'],
+                        ['🟦R', '🔺B', null]
+                    ],
+                    options: ['🔵G', '🟦G', '🔺G'],
+                    correct: 0,
+                    explanation: "Combinación única de forma y color",
+                    complexity: "Alta",
+                    detailedExplanation: "Cada forma y color aparece exactamente una vez en cada fila y columna, siguiendo un patrón de matriz latina."
+                },
+                {
+                    // Patrón: Secuencia de transformación geométrica
+                    matrix: [
+                        ['△', '▽', '□'],
+                        ['▽', '□', '◇'],
+                        ['□', '◇', null]
+                    ],
+                    options: ['△', '▽', '◇'],
+                    correct: 0,
+                    explanation: "Secuencia de transformación geométrica",
+                    complexity: "Media",
+                    detailedExplanation: "El patrón muestra una secuencia cíclica de transformaciones geométricas: triángulo, triángulo invertido, cuadrado, rombo."
+                },
+                {
+                    // Patrón: Operaciones matemáticas complejas
+                    matrix: [
+                        ['1', '3', '6'],
+                        ['2', '6', '12'],
+                        ['3', '9', null]
+                    ],
+                    options: ['18', '15', '21'],
+                    correct: 0,
+                    explanation: "Multiplicación progresiva",
+                    complexity: "Alta",
+                    detailedExplanation: "Cada celda es el resultado de multiplicar el número de fila por el número de columna (empezando desde 1)."
+                },
+                {
+                    // Patrón: Rotación y reflexión
+                    matrix: [
+                        ['↖', '↑', '↗'],
+                        ['←', '○', '→'],
+                        ['↙', '↓', null]
+                    ],
+                    options: ['↘', '↗', '↖'],
+                    correct: 0,
+                    explanation: "Completar direcciones cardinales",
+                    complexity: "Media",
+                    detailedExplanation: "El patrón incluye todas las direcciones cardinales y diagonales alrededor de un punto central."
+                },
+                {
+                    // Patrón: Secuencia de crecimiento
+                    matrix: [
+                        ['○', '◔', '◑'],
+                        ['◕', '●', '◔'],
+                        ['◑', '◕', null]
+                    ],
+                    options: ['●', '○', '◑'],
+                    correct: 0,
+                    explanation: "Ciclo de llenado progresivo",
+                    complexity: "Media",
+                    detailedExplanation: "El patrón muestra un ciclo continuo de llenado de círculos, desde vacío hasta lleno y viceversa."
+                },
+                {
+                    // Patrón: Transformación de formas y colores
+                    matrix: [
+                        ['🔺', '🔵', '🟩'],
+                        ['🔵', '🟩', '🟥'],
+                        ['🟩', '🟥', null]
+                    ],
+                    options: ['🔺', '🔵', '🟩'],
+                    correct: 0,
+                    explanation: "Rotación de colores con forma fija",
+                    complexity: "Alta",
+                    detailedExplanation: "La forma permanece constante mientras los colores rotan en un patrón específico."
+                },
+                {
+                    // Patrón: Secuencia numérica avanzada
+                    matrix: [
+                        ['2', '3', '5'],
+                        ['3', '5', '8'],
+                        ['5', '8', null]
+                    ],
+                    options: ['13', '10', '12'],
+                    correct: 0,
+                    explanation: "Secuencia de Fibonacci clásica",
+                    complexity: "Media",
+                    detailedExplanation: "Cada número es la suma de los dos anteriores, siguiendo la secuencia de Fibonacci: 2, 3, 5, 8, 13..."
+                },
+                {
+                    // Patrón: Simetría múltiple
+                    matrix: [
+                        ['◩', '◪', '◫'],
+                        ['◪', '◫', '◩'],
+                        ['◫', '◩', null]
+                    ],
+                    options: ['◪', '◫', '◩'],
+                    correct: 0,
+                    explanation: "Simetría rotacional múltiple",
+                    complexity: "Alta",
+                    detailedExplanation: "El patrón tiene simetría rotacional de 90 grados y simetría de reflexión en ambos ejes."
+                },
+                {
+                    // Patrón: Operaciones anidadas complejas
+                    matrix: [
+                        ['1', '4', '9'],
+                        ['8', '27', '64'],
+                        ['27', '64', null]
+                    ],
+                    options: ['125', '81', '100'],
+                    correct: 0,
+                    explanation: "Secuencia de cubos numéricos",
+                    complexity: "Alta",
+                    detailedExplanation: "Cada fila sigue el patrón: n³ para n=1,2,3. La tercera fila: 3³=27, 4³=64, 5³=125."
+                },
+                {
+                    // Patrón: Combinación multidimensional
+                    matrix: [
+                        ['🔺S', '🔵M', '🟦L'],
+                        ['🔵S', '🟦M', '🔺L'],
+                        ['🟦S', '🔺M', null]
+                    ],
+                    options: ['🔵L', '🟦L', '🔺L'],
+                    correct: 0,
+                    explanation: "Combinación de forma, color y tamaño",
+                    complexity: "Muy Alta",
+                    detailedExplanation: "Cada combinación de forma, color y tamaño aparece exactamente una vez en la matriz, siguiendo un diseño de cuadrado latino tridimensional."
+                }
+            ];
+        }
+
+        // Guardar datos personales
+        function savePersonalData() {
+            const name = document.getElementById('participant-name').value.trim();
+            const age = document.getElementById('participant-age').value;
+            const email = document.getElementById('participant-email').value.trim();
+            
+            if (!name) {
+                alert('Por favor ingresa tu nombre completo.');
+                return;
+            }
+            
+            if (!age || age < 10 || age > 100) {
+                alert('Por favor ingresa una edad válida (entre 10 y 100 años).');
+                return;
+            }
+            
+            participantData = {
+                name: name,
+                age: age,
+                email: email,
+                date: new Date().toLocaleDateString('es-ES')
+            };
+            
+            document.getElementById('personal-data').classList.add('hidden');
+            document.getElementById('instructions').classList.remove('hidden');
+        }
+
+        // Iniciar el test
+        function startTest() {
+            document.getElementById('instructions').classList.add('hidden');
+            document.getElementById('test').classList.remove('hidden');
+            
+            // Inicializar datos del test
+            initializeTestData();
+            
+            // Mostrar primera pregunta
+            showQuestion(0);
+            
+            // Iniciar temporizador
+            startTimer();
+        }
+
+        // Mostrar pregunta actual
+        function showQuestion(index) {
+            currentQuestion = index;
+            selectedOption = null;
+            
+            // Actualizar información de progreso
+            document.getElementById('current').textContent = index + 1;
+            document.getElementById('total').textContent = testData.length;
+            document.getElementById('score-value').textContent = score;
+            
+            const question = testData[index];
+            const matrixContainer = document.getElementById('matrix');
+            const patternInfo = document.getElementById('pattern-info');
+            
+            // Limpiar matriz
+            matrixContainer.innerHTML = '';
+            
+            // Mostrar información del patrón
+            let complexityClass = '';
+            switch(question.complexity) {
+                case 'Baja': complexityClass = 'complexity-low'; break;
+                case 'Media': complexityClass = 'complexity-medium'; break;
+                case 'Alta': complexityClass = 'complexity-high'; break;
+                case 'Muy Alta': complexityClass = 'complexity-high'; break;
+            }
+            
+            patternInfo.innerHTML = `
+                <strong>Complejidad:</strong> <span class="complexity-badge ${complexityClass}">${question.complexity}</span>
+                <br><strong>Descripción:</strong> ${question.explanation}
+            `;
+            
+            // Crear matriz visual
+            for (let i = 0; i < 3; i++) {
+                const row = document.createElement('div');
+                row.className = 'matrix-row';
+                
+                for (let j = 0; j < 3; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'matrix-cell';
+                    
+                    const value = question.matrix[i][j];
+                    if (value === null) {
+                        cell.classList.add('empty');
+                        cell.textContent = '?';
+                    } else {
+                        cell.textContent = value;
+                    }
+                    
+                    row.appendChild(cell);
+                }
+                
+                matrixContainer.appendChild(row);
+            }
+            
+            // Crear opciones
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, idx) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.textContent = option;
+                optionElement.dataset.index = idx;
+                
+                optionElement.addEventListener('click', function() {
+                    // Deseleccionar opción anterior
+                    document.querySelectorAll('.option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Seleccionar nueva opción
+                    selectedOption = idx;
+                    this.classList.add('selected');
+                });
+                
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Actualizar texto del botón si es la última pregunta
+            const nextButton = document.getElementById('next-button');
+            if (index === testData.length - 1) {
+                nextButton.textContent = 'Ver Resultados';
+            } else {
+                nextButton.textContent = 'Siguiente Pregunta';
+            }
+            
+            // Actualizar barra de progreso
+            updateProgressBar();
+            
+            // Registrar tiempo de inicio de la pregunta
+            questionStartTime = new Date();
+        }
+
+        // Verificar respuesta
+        function checkAnswer() {
+            if (selectedOption === null) {
+                alert('Por favor selecciona una opción antes de continuar.');
+                return;
+            }
+            
+            const question = testData[currentQuestion];
+            const isCorrect = selectedOption === question.correct;
+            
+            // Registrar tiempo de respuesta
+            const endTime = new Date();
+            const timeSpent = Math.floor((endTime - questionStartTime) / 1000);
+            timesPerQuestion.push(timeSpent);
+            
+            // Registrar respuesta del usuario
+            userAnswers.push({
+                question: currentQuestion,
+                selected: selectedOption,
+                correct: question.correct,
+                isCorrect: isCorrect,
+                timeSpent: timeSpent
+            });
+            
+            if (isCorrect) {
+                score++;
+            }
+            
+            // Avanzar a la siguiente pregunta o mostrar resultados
+            if (currentQuestion < testData.length - 1) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            } else {
+                showResults();
+            }
+        }
+
+        // Mostrar resultados
+        function showResults() {
+            document.getElementById('test').classList.add('hidden');
+            document.getElementById('results').classList.remove('hidden');
+            
+            // Detener temporizador
+            clearInterval(timerInterval);
+            
+            // Calcular tiempo total
+            const totalTime = timeElapsed;
+            const minutes = Math.floor(totalTime / 60);
+            const seconds = totalTime % 60;
+            const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Calcular tiempo promedio por pregunta
+            const avgTime = Math.round(timesPerQuestion.reduce((a, b) => a + b, 0) / timesPerQuestion.length);
+            
+            // Actualizar estadísticas
+            document.getElementById('final-score').textContent = `${score}/${testData.length}`;
+            document.getElementById('correct-answers').textContent = score;
+            document.getElementById('percentage').textContent = `${Math.round((score / testData.length) * 100)}%`;
+            document.getElementById('total-time').textContent = formattedTime;
+            document.getElementById('average-time').textContent = `${avgTime}s`;
+            
+            // Mostrar interpretación
+            const percentage = (score / testData.length) * 100;
+            let interpretation = '';
+            
+            if (percentage >= 90) {
+                interpretation = '¡Excelente! Tu capacidad de razonamiento abstracto es excepcional. Eres capaz de identificar patrones complejos y relaciones lógicas con gran precisión.';
+            } else if (percentage >= 75) {
+                interpretation = 'Muy bien. Tienes habilidades sólidas de razonamiento abstracto y puedes resolver problemas complejos de manera efectiva.';
+            } else if (percentage >= 60) {
+                interpretation = 'Buen trabajo. Tienes una comprensión adecuada de los patrones abstractos, con espacio para mejorar en problemas más complejos.';
+            } else if (percentage >= 40) {
+                interpretation = 'Resultado aceptable. Puedes identificar patrones básicos, pero necesitas desarrollar más tus habilidades para problemas complejos.';
+            } else {
+                interpretation = 'Necesitas practicar más. Te recomendamos trabajar en ejercicios de razonamiento abstracto para mejorar tus habilidades.';
+            }
+            
+            document.getElementById('interpretation').innerHTML = `
+                <h3>Interpretación de Resultados</h3>
+                <p>${interpretation}</p>
+                <p><strong>Puntuación:</strong> ${score} de ${testData.length} (${Math.round(percentage)}%)</p>
+                <p><strong>Tiempo total:</strong> ${formattedTime}</p>
+                <p><strong>Tiempo promedio por pregunta:</strong> ${avgTime} segundos</p>
+            `;
+            
+            // Mostrar resultados detallados
+            const detailedResults = document.getElementById('detailed-results');
+            detailedResults.innerHTML = '<h3>Desglose de Resultados</h3>';
+            
+            testData.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+                
+                const isCorrect = userAnswer.isCorrect;
+                const answerClass = isCorrect ? 'correct-answer' : 'incorrect-answer';
+                const answerText = isCorrect ? 'Correcta' : 'Incorrecta';
+                
+                resultItem.innerHTML = `
+                    <div>
+                        <strong>Pregunta ${index + 1}:</strong> ${question.explanation}
+                        <br><small>Complejidad: ${question.complexity}</small>
+                    </div>
+                    <div>
+                        <span class="${answerClass}">${answerText}</span>
+                        <br><small>Tiempo: ${userAnswer.timeSpent}s</small>
+                    </div>
+                `;
+                
+                detailedResults.appendChild(resultItem);
+            });
+        }
+
+        // Temporizador
+        function startTimer() {
+            startTime = new Date();
+            timeElapsed = 0;
+            
+            timerInterval = setInterval(function() {
+                timeElapsed++;
+                
+                const minutes = Math.floor(timeElapsed / 60);
+                const seconds = timeElapsed % 60;
+                
+                document.getElementById('timer').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // Actualizar barra de progreso
+        function updateProgressBar() {
+            const progress = ((currentQuestion + 1) / testData.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+        }
+
+        // Reiniciar test
+        function resetTest() {
+            currentQuestion = 0;
+            score = 0;
+            selectedOption = null;
+            userAnswers = [];
+            timesPerQuestion = [];
+            timeElapsed = 0;
+            
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('instructions').classList.remove('hidden');
+        }
+
+        // Mostrar explicaciones
+        function showAnswers() {
+            const detailedResults = document.getElementById('detailed-results');
+            detailedResults.innerHTML = '<h3>Explicaciones Detalladas</h3>';
+            
+            testData.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+                
+                const isCorrect = userAnswer.isCorrect;
+                const answerClass = isCorrect ? 'correct-answer' : 'incorrect-answer';
+                const answerText = isCorrect ? 'Correcta' : 'Incorrecta';
+                
+                resultItem.innerHTML = `
+                    <div>
+                        <strong>Pregunta ${index + 1}:</strong> ${question.explanation}
+                        <br><small>${question.detailedExplanation}</small>
+                        <br><small><strong>Respuesta correcta:</strong> ${question.options[question.correct]}</small>
+                        <br><small><strong>Tu respuesta:</strong> ${question.options[userAnswer.selected]} <span class="${answerClass}">(${answerText})</span></small>
+                    </div>
+                `;
+                
+                detailedResults.appendChild(resultItem);
+            });
+        }
+
+        // Generar PDF con los resultados
+        function generatePDF() {
+            // Usar jsPDF para generar el PDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Colores para el diseño
+            const primaryColor = [44, 62, 80];
+            const secondaryColor = [52, 152, 219];
+            const accentColor = [231, 76, 60];
+            const successColor = [46, 204, 113];
+            
+            // Encabezado con gradiente
+            doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+            doc.rect(0, 0, 220, 40, 'F');
+            
+            // Logo y título
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(22);
+            doc.setFont(undefined, 'bold');
+            doc.text('FARMACIAS SAN ROQUE', 105, 15, { align: 'center' });
+            doc.setFontSize(16);
+            doc.text('Evaluación de Razonamiento Abstracto', 105, 25, { align: 'center' });
+            
+            // Información del participante
+            doc.setFillColor(240, 240, 240);
+            doc.rect(10, 45, 190, 40, 'F');
+            doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.text('INFORMACIÓN DEL PARTICIPANTE', 20, 55);
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'normal');
+            doc.text(`Nombre: ${participantData.name}`, 20, 65);
+            doc.text(`Edad: ${participantData.age} años`, 20, 72);
+            if (participantData.email) {
+                doc.text(`Email: ${participantData.email}`, 20, 79);
+            }
+            doc.text(`Fecha: ${participantData.date}`, 120, 65);
+            
+            // Resultados principales
+            doc.setFontSize(18);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
+            doc.text('RESULTADOS PRINCIPALES', 105, 100, { align: 'center' });
+            
+            // Puntuación
+            const percentage = Math.round((score / testData.length) * 100);
+            doc.setFontSize(48);
+            doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+            doc.text(`${percentage}%`, 105, 120, { align: 'center' });
+            
+            doc.setFontSize(14);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`Puntuación: ${score} de ${testData.length}`, 105, 130, { align: 'center' });
+            
+            // Estadísticas
+            const totalTime = timeElapsed;
+            const minutes = Math.floor(totalTime / 60);
+            const seconds = totalTime % 60;
+            const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            const avgTime = Math.round(timesPerQuestion.reduce((a, b) => a + b, 0) / timesPerQuestion.length);
+            
+            doc.setFillColor(250, 250, 250);
+            doc.rect(15, 140, 180, 30, 'F');
+            doc.setFontSize(12);
+            doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+            doc.text(`Tiempo total: ${formattedTime}`, 30, 152);
+            doc.text(`Tiempo promedio: ${avgTime}s por pregunta`, 30, 160);
+            doc.text(`Respuestas correctas: ${score}`, 120, 152);
+            doc.text(`Eficiencia: ${Math.round(score / totalTime * 60 * 100) / 100} pts/min`, 120, 160);
+            
+            // Diagnóstico detallado
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
+            doc.text('DIAGNÓSTICO DETALLADO', 105, 185, { align: 'center' });
+            
+            let diagnosis = '';
+            let recommendations = '';
+            
+            if (percentage >= 90) {
+                diagnosis = 'EXCELENTE CAPACIDAD DE RAZONAMIENTO ABSTRACTO';
+                recommendations = '• Mantener el entrenamiento cognitivo con desafíos complejos\n• Explorar áreas que requieren alto razonamiento lógico\n• Considerar actividades que involucren resolución de problemas avanzados';
+                doc.setTextColor(successColor[0], successColor[1], successColor[2]);
+            } else if (percentage >= 75) {
+                diagnosis = 'BUENA CAPACIDAD DE RAZONAMIENTO ABSTRACTO';
+                recommendations = '• Continuar con ejercicios de patrones complejos\n• Practicar con matrices de mayor dificultad\n• Desarrollar habilidades de pensamiento lateral';
+                doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
+            } else if (percentage >= 60) {
+                diagnosis = 'CAPACIDAD DE RAZONAMIENTO ABSTRACTO EN DESARROLLO';
+                recommendations = '• Practicar regularmente con ejercicios de patrones\n• Trabajar en identificar relaciones espaciales y lógicas\n• Desarrollar paciencia en el análisis de problemas complejos';
+                doc.setTextColor(255, 165, 0);
+            } else if (percentage >= 40) {
+                diagnosis = 'CAPACIDAD BÁSICA DE RAZONAMIENTO ABSTRACTO';
+                recommendations = '• Comenzar con ejercicios simples de patrones\n• Desarrollar habilidades de observación detallada\n• Practicar regularmente para mejorar el rendimiento';
+                doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
+            } else {
+                diagnosis = 'NECESITA DESARROLLAR RAZONAMIENTO ABSTRACTO';
+                recommendations = '• Iniciar con ejercicios básicos de identificación de patrones\n• Trabajar en habilidades de observación y atención al detalle\n• Practicar regularmente para fortalecer el pensamiento lógico';
+                doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
+            }
+            
+            doc.setFontSize(14);
+            doc.text(diagnosis, 105, 200, { align: 'center' });
+            
+            doc.setFontSize(11);
+            doc.setTextColor(80, 80, 80);
+            doc.setFont(undefined, 'normal');
+            const splitText = doc.splitTextToSize(recommendations, 180);
+            doc.text(splitText, 20, 215);
+            
+            // Desglose por complejidad
+            doc.addPage();
+            
+            // Encabezado segunda página
+            doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+            doc.rect(0, 0, 220, 25, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.text('ANÁLISIS DETALLADO POR PREGUNTA', 105, 15, { align: 'center' });
+            
+            // Tabla de resultados
+            let yPosition = 40;
+            doc.setFontSize(10);
+            doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+            
+            // Encabezado de tabla
+            doc.setFillColor(230, 230, 230);
+            doc.rect(10, yPosition, 190, 10, 'F');
+            doc.text('Pregunta', 15, yPosition + 7);
+            doc.text('Complejidad', 70, yPosition + 7);
+            doc.text('Resultado', 120, yPosition + 7);
+            doc.text('Tiempo (s)', 160, yPosition + 7);
+            
+            yPosition += 15;
+            
+            // Filas de la tabla
+            testData.forEach((question, index) => {
+                if (yPosition > 270) {
+                    doc.addPage();
+                    yPosition = 20;
+                    
+                    // Encabezado de tabla en nueva página
+                    doc.setFillColor(230, 230, 230);
+                    doc.rect(10, yPosition, 190, 10, 'F');
+                    doc.text('Pregunta', 15, yPosition + 7);
+                    doc.text('Complejidad', 70, yPosition + 7);
+                    doc.text('Resultado', 120, yPosition + 7);
+                    doc.text('Tiempo (s)', 160, yPosition + 7);
+                    yPosition += 15;
+                }
+                
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer.isCorrect;
+                
+                // Color de fondo alternado
+                if (index % 2 === 0) {
+                    doc.setFillColor(250, 250, 250);
+                    doc.rect(10, yPosition, 190, 10, 'F');
+                }
+                
+                // Contenido de la fila
+                doc.setTextColor(0, 0, 0);
+                doc.text(`${index + 1}`, 15, yPosition + 7);
+                
+                // Color según complejidad
+                if (question.complexity === 'Alta' || question.complexity === 'Muy Alta') {
+                    doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
+                } else if (question.complexity === 'Media') {
+                    doc.setTextColor(255, 165, 0);
+                } else {
+                    doc.setTextColor(successColor[0], successColor[1], successColor[2]);
+                }
+                doc.text(question.complexity, 70, yPosition + 7);
+                
+                // Resultado
+                doc.setTextColor(isCorrect ? successColor[0] : accentColor[0], 
+                                isCorrect ? successColor[1] : accentColor[1], 
+                                isCorrect ? successColor[2] : accentColor[2]);
+                doc.text(isCorrect ? 'Correcta' : 'Incorrecta', 120, yPosition + 7);
+                
+                // Tiempo
+                doc.setTextColor(80, 80, 80);
+                doc.text(`${userAnswer.timeSpent}s`, 160, yPosition + 7);
+                
+                yPosition += 10;
+            });
+            
+            // Pie de página
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(150, 150, 150);
+                doc.text(`Página ${i} de ${pageCount}`, 105, 290, { align: 'center' });
+                doc.text('Derechos reservados Farmacias San Roque 2025', 105, 295, { align: 'center' });
+            }
+            
+            // Guardar el PDF
+            doc.save(`Resultados_Test_Razonamiento_${participantData.name.replace(/\s+/g, '_')}.pdf`);
+        }
+    </script>
+</body>
+</html>
